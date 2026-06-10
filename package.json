@@ -10,7 +10,7 @@
     "build": "tauri build",
     "build:frontend": "vite build",
     "build:win": "tauri build --target x86_64-pc-windows-msvc",
-    "lint": "eslint .",
+    "lint": "eslint . --max-warnings 0",
     "snap:save": "node scripts/snap.mjs save",
     "snap:check": "node scripts/snap.mjs check"
   },

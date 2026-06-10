@@ -44,9 +44,9 @@ export default [
       'react/prop-types': 'off', // no PropTypes in this codebase
       'no-unused-vars': ['warn', { argsIgnorePattern: '^_', varsIgnorePattern: '^_' }],
       'no-empty': ['error', { allowEmptyCatch: true }], // intentional `catch {}` is fine
-      // Advisory perf rule (react-hooks v7): the codebase intentionally syncs
-      // external config/props into state inside effects. Surface it, don't block.
-      'react-hooks/set-state-in-effect': 'warn',
+      // react-hooks/set-state-in-effect stays at its default (error). The two
+      // legitimate external→state syncs are disabled inline with justification;
+      // any new occurrence should be reviewed, not silently allowed.
     },
   },
 ]
