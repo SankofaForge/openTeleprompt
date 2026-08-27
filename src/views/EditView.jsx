@@ -4,25 +4,17 @@ import StarterKit from '@tiptap/starter-kit'
 import { TextStyle } from '@tiptap/extension-text-style'
 import { Color } from '@tiptap/extension-color'
 import { Image } from '@tiptap/extension-image'
+import { insertImageNodes, readImageFiles } from '../lib/image'
 import { useAppStore } from '../store'
 import { API } from '../lib/api'
 
-// Read image files as base64 data-URLs and insert them as image nodes into the
-// ProseMirror view. Used by both paste and drop handlers, where the Tiptap
-// editor instance isn't yet in scope. `pos` (optional) inserts at a specific
-// document position — used for drop so the image lands where it was dropped.
 function insertImagesIntoView(view, fileList, pos) {
   const files = Array.from(fileList).filter((f) => f.type.startsWith('image/'))
   if (!files.length) return false
-  files.forEach((file) => {
-    const reader = new FileReader()
-    reader.onload = () => {
-      const node = view.state.schema.nodes.image.create({ src: reader.result })
-      const insertPos = pos == null ? view.state.selection.from : pos
-      view.dispatch(view.state.tr.insert(insertPos, node))
-    }
-    reader.readAsDataURL(file)
-  })
+
+  readImageFiles(files).then((images) => {
+    insertImageNodes(view, images, pos)
+  }).catch(() => undefined)
   return true
 }
 
@@ -165,11 +157,13 @@ export default function EditView() {
 
   function insertImageFiles(fileList) {
     const files = Array.from(fileList).filter((f) => f.type.startsWith('image/'))
-    files.forEach((file) => {
-      const reader = new FileReader()
-      reader.onload = () => editor?.chain().focus().setImage({ src: reader.result }).run()
-      reader.readAsDataURL(file)
-    })
+    if (!files.length) return
+
+    readImageFiles(files).then((images) => {
+      if (!editor || editor.isDestroyed || editor.view.isDestroyed) return
+      editor.view.focus()
+      insertImageNodes(editor.view, images)
+    }).catch(() => undefined)
   }
 
   function handleImagePick(e) {

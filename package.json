@@ -9,6 +9,7 @@
     "dev:react": "vite",
     "build": "tauri build",
     "build:frontend": "vite build",
+    "test": "node --test tests/*.test.mjs",
     "build:win": "tauri build --target x86_64-pc-windows-msvc",
     "snap:save": "node scripts/snap.mjs save",
     "snap:check": "node scripts/snap.mjs check"
